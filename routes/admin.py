@@ -29,6 +29,7 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password, password):
             session['admin_logged_in'] = True
+            session['admin_username'] = user.username
             flash('Logged in successfully.', 'success')
             return redirect(url_for('admin.dashboard'))
         else:
@@ -507,3 +508,38 @@ def delete_message(id):
     db.session.commit()
     flash('Message deleted successfully!', 'success')
     return redirect(url_for('admin.messages'))
+# --- Account Settings (Change Username/Password) ---
+@admin_bp.route('/account', methods=['GET', 'POST'])
+@login_required
+def account_settings():
+    admin = User.query.filter_by(username=session.get('admin_username', 'admin')).first()
+    if not admin:
+        admin = User.query.first() # Fallback to first user
+        
+    if request.method == 'POST':
+        new_username = request.form.get('username')
+        new_password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        
+        if not new_username:
+            flash('Username cannot be empty.', 'error')
+            return redirect(url_for('admin.account_settings'))
+            
+        if new_password:
+            if new_password != confirm_password:
+                flash('Passwords do not match.', 'error')
+                return redirect(url_for('admin.account_settings'))
+            
+            from werkzeug.security import generate_password_hash
+            admin.password = generate_password_hash(new_password, method='pbkdf2:sha256')
+            
+        admin.username = new_username
+        db.session.commit()
+        
+        # Update session with new username
+        session['admin_username'] = new_username
+        
+        flash('Account settings updated successfully!', 'success')
+        return redirect(url_for('admin.account_settings'))
+        
+    return render_template('admin/account_settings.html', admin=admin)
