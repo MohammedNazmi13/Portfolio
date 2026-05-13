@@ -7,13 +7,21 @@ public_bp = Blueprint('public', __name__)
 
 @public_bp.route('/', methods=['GET'])
 def index():
-    site = SiteContent.query.first()
-    educations = Education.query.order_by(Education.created_at.desc()).all()
-    experiences = Experience.query.order_by(Experience.created_at.desc()).all()
-    certificates = Certificate.query.order_by(Certificate.created_at.desc()).all()
-    
-    # Group skills by category with full objects
-    all_skills = Skill.query.all()
+    try:
+        site = SiteContent.query.first()
+        educations = Education.query.order_by(Education.created_at.desc()).all()
+        experiences = Experience.query.order_by(Experience.created_at.desc()).all()
+        certificates = Certificate.query.order_by(Certificate.created_at.desc()).all()
+        
+        # Group skills by category with full objects
+        all_skills = Skill.query.all()
+    except:
+        site = None
+        educations = []
+        experiences = []
+        certificates = []
+        all_skills = []
+
     skills_by_category = {}
     for skill in all_skills:
         if skill.category not in skills_by_category:
@@ -29,7 +37,11 @@ def index():
 
 @public_bp.route('/view-resume')
 def view_resume():
-    site = SiteContent.query.first()
+    try:
+        site = SiteContent.query.first()
+    except:
+        site = None
+        
     if not site or not site.resume_url:
         return redirect(url_for('public.index'))
     return render_template('resume_view.html', site=site)
