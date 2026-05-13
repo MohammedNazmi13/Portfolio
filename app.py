@@ -47,9 +47,13 @@ def create_app(config_class=Config):
         # Create default site content if doesn't exist
         if not SiteContent.query.first():
             default_content = SiteContent(
-                name="Your Name",
-                title="Developer",
-                about="Welcome to my portfolio."
+                name="Mohammed Nazmi",
+                title="Full Stack Developer",
+                tagline="Building scalable systems.",
+                about="Welcome to my portfolio.",
+                email="hello@example.com",
+                phone="+1234567890",
+                skills="Python, Flask, JavaScript"
             )
             db.session.add(default_content)
             
