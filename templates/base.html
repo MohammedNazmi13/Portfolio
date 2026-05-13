@@ -63,14 +63,16 @@
         <div class="footer-content">
             <p>&copy; 2026 Mohammed Nazmi. All rights reserved.</p>
             <div class="social-links">
-                {% if site.github_link %}
-                <a href="{{ site.github_link }}" target="_blank"><i class="fab fa-github"></i></a>
-                {% endif %}
-                {% if site.linkedin_link %}
-                <a href="{{ site.linkedin_link }}" target="_blank"><i class="fab fa-linkedin"></i></a>
-                {% endif %}
-                {% if site.whatsapp %}
-                <a href="https://wa.me/{{ site.whatsapp|replace('+', '')|replace(' ', '') }}" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                {% if site %}
+                    {% if site.github_link %}
+                    <a href="{{ site.github_link }}" target="_blank"><i class="fab fa-github"></i></a>
+                    {% endif %}
+                    {% if site.linkedin_link %}
+                    <a href="{{ site.linkedin_link }}" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    {% endif %}
+                    {% if site.whatsapp %}
+                    <a href="https://wa.me/{{ site.whatsapp|replace('+', '')|replace(' ', '') }}" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>

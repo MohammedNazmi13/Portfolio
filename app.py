@@ -15,11 +15,14 @@ def create_app(config_class=Config):
         from routes.admin import admin_bp
         from routes.api import api_bp
 
-        # Context Processor for site content
+        # Context Processor for site content (Safe for initial deployment)
         from models.models import SiteContent
         @app.context_processor
         def inject_site():
-            return dict(site=SiteContent.query.first())
+            try:
+                return dict(site=SiteContent.query.first())
+            except:
+                return dict(site=None)
 
         # Setup route for first-time initialization
         @app.route('/setup-db')
