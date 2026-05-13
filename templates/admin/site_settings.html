@@ -1,0 +1,81 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<div class="form-wrapper">
+    <div class="dashboard-header">
+        <h2>Manage General Site</h2>
+    </div>
+
+    <form method="POST" class="admin-form" enctype="multipart/form-data">
+        <div class="form-section">
+            <h3>Hero & Identity</h3>
+            <div class="form-group">
+                <label for="name">Your Name *</label>
+                <input type="text" id="name" name="name" value="{{ site.name if site else '' }}" required class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="title">Hero Title (e.g. Software Engineer) *</label>
+                <input type="text" id="title" name="title" value="{{ site.title if site else '' }}" required class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="tagline">Hero Tagline *</label>
+                <textarea id="tagline" name="tagline" rows="3" required class="form-control">{{ site.tagline if site else '' }}</textarea>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Contact & Socials</h3>
+            <div class="form-group">
+                <label for="email">Contact Email *</label>
+                <input type="email" id="email" name="email" value="{{ site.email if site else '' }}" required class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Contact Phone *</label>
+                <input type="text" id="phone" name="phone" value="{{ site.phone if site else '' }}" required class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="address">Address *</label>
+                <input type="text" id="address" name="address" value="{{ site.address if site else '' }}" required class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="github_link">GitHub Link</label>
+                <input type="url" id="github_link" name="github_link" value="{{ site.github_link if site else '' }}" placeholder="https://github.com/yourusername" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="linkedin_link">LinkedIn Link</label>
+                <input type="url" id="linkedin_link" name="linkedin_link" value="{{ site.linkedin_link if site else '' }}" placeholder="https://linkedin.com/in/yourusername" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="whatsapp">WhatsApp Number</label>
+                <input type="text" id="whatsapp" name="whatsapp" value="{{ site.whatsapp if site else '' }}" placeholder="+1234567890" class="form-control">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Resources & Skills</h3>
+            <div class="form-group">
+                <label for="resume_file">Upload Resume (PDF)</label>
+                <input type="file" id="resume_file" name="resume_file" accept=".pdf" class="form-control">
+                {% if site and site.resume_url %}
+                <p class="help-text">Current Resume: <a href="{{ site.resume_url }}" target="_blank">View/Download</a></p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="skills">Skills (comma separated) *</label>
+                <input type="text" id="skills" name="skills" value="{{ site.skills if site else '' }}" required class="form-control">
+                <p class="help-text">e.g. Python, Flask, MySQL, Git, JavaScript. Icons will be mapped automatically.</p>
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Update General Settings</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<div class="form-wrapper">
+    <div class="dashboard-header">
+        <h2>{{ 'Edit' if project else 'Add New' }} Project</h2>
+        <a href="{{ url_for('admin.projects') }}" class="btn btn-secondary">Back to List</a>
+    </div>
+
+    <form method="POST" class="admin-form" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="title">Project Title *</label>
+            <input type="text" id="title" name="title" value="{{ project.title if project else '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="project_image">Project Image / PDF / File (optional)</label>
+            {% if project and project.image_url %}
+            <div class="current-file" style="margin-bottom: 10px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 4px;">
+                <p style="margin: 0;">Current: <a href="{{ project.image_url }}" target="_blank">{{ project.image_url.split('/')[-1] }}</a></p>
+                {% if not project.image_url.endswith('.pdf') %}
+                <img src="{{ project.image_url }}" alt="Preview" style="max-height: 100px; margin-top: 10px; border-radius: 4px;">
+                {% endif %}
+            </div>
+            {% endif %}
+            <input type="file" id="project_image" name="project_image" accept="image/*,.pdf">
+            <p class="form-hint">Upload project preview (Photo, Image, PDF, etc.)</p>
+        </div>
+        
+        <div class="form-group">
+            <label for="tech_stack">Tech Stack (comma separated) *</label>
+            <input type="text" id="tech_stack" name="tech_stack" value="{{ project.tech_stack if project else '' }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="github_link">GitHub Link (optional)</label>
+            <input type="url" id="github_link" name="github_link" value="{{ project.github_link if project else '' }}">
+        </div>
+        
+        <div class="form-group">
+            <label for="demo_link">Live Demo Link (optional)</label>
+            <input type="url" id="demo_link" name="demo_link" value="{{ project.demo_link if project else '' }}">
+        </div>
+        
+        <div class="form-group">
+            <label for="description">Short Description * (Max 30 words)</label>
+            <textarea id="description" name="description" rows="3" required>{{ project.description if project else '' }}</textarea>
+            <p class="form-hint" id="word-count-hint">Current word count: <span id="word-count">0</span> / 30</p>
+        </div>
+
+        <div class="form-group">
+            <label for="full_description">Detailed Project Details (Read More) *</label>
+            <textarea id="full_description" name="full_description" rows="10" required>{{ project.full_description if project else '' }}</textarea>
+            <p class="form-hint">This content will appear in the "Read More" popup.</p>
+        </div>
+        
+        <button type="submit" class="btn btn-primary" id="submit-btn">{{ 'Update' if project else 'Create' }} Project</button>
+    </form>
+
+    <script>
+        const descriptionArea = document.getElementById('description');
+        const wordCountSpan = document.getElementById('word-count');
+        const submitBtn = document.getElementById('submit-btn');
+
+        function updateWordCount() {
+            const text = descriptionArea.value.trim();
+            const words = text ? text.split(/\s+/).length : 0;
+            wordCountSpan.innerText = words;
+            
+            if (words > 30) {
+                wordCountSpan.style.color = '#ef4444';
+                submitBtn.disabled = true;
+                submitBtn.title = "Short description must be within 30 words.";
+            } else {
+                wordCountSpan.style.color = '#10b981';
+                submitBtn.disabled = false;
+                submitBtn.title = "";
+            }
+        }
+
+        descriptionArea.addEventListener('input', updateWordCount);
+        window.addEventListener('load', updateWordCount);
+    </script>
+</div>
+{% endblock %}

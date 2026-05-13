@@ -1,0 +1,43 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h2>Manage Education</h2>
+    <div class="header-actions">
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+        <a href="{{ url_for('admin.new_education') }}" class="btn btn-success">+ Add New Education</a>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Degree</th>
+                <th>Institution</th>
+                <th>Dates</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for edu in educations %}
+            <tr>
+                <td>{{ edu.degree }}</td>
+                <td>{{ edu.institution }}</td>
+                <td>{{ edu.date_range }}</td>
+                <td class="actions">
+                    <a href="{{ url_for('admin.edit_education', id=edu.id) }}" class="btn btn-small btn-edit">Edit</a>
+                    <form action="{{ url_for('admin.delete_education', id=edu.id) }}" method="POST" class="inline-form" onsubmit="return confirm('Are you sure you want to delete this education entry?');">
+                        <button type="submit" class="btn btn-small btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" class="text-center">No education entries found. Add one!</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

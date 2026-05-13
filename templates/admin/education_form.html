@@ -1,0 +1,34 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<div class="form-wrapper">
+    <div class="dashboard-header">
+        <h2>{{ 'Edit' if education else 'Add New' }} Education</h2>
+        <a href="{{ url_for('admin.education') }}" class="btn btn-secondary">Back to List</a>
+    </div>
+
+    <form method="POST" class="admin-form">
+        <div class="form-group">
+            <label for="degree">Degree / Certification *</label>
+            <input type="text" id="degree" name="degree" value="{{ education.degree if education else '' }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="institution">Institution / School *</label>
+            <input type="text" id="institution" name="institution" value="{{ education.institution if education else '' }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="date_range">Date Range (e.g. 2018 - 2022) *</label>
+            <input type="text" id="date_range" name="date_range" value="{{ education.date_range if education else '' }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="description">Description *</label>
+            <textarea id="description" name="description" rows="5" required>{{ education.description if education else '' }}</textarea>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">{{ 'Update' if education else 'Create' }} Education Entry</button>
+    </form>
+</div>
+{% endblock %}

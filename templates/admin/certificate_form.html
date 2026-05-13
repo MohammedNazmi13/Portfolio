@@ -1,0 +1,62 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<div class="form-wrapper">
+    <div class="dashboard-header">
+        <h2>{{ 'Edit' if certificate else 'Add New' }} Certificate</h2>
+        <a href="{{ url_for('admin.certificates') }}" class="btn btn-secondary">Back to List</a>
+    </div>
+
+    <form method="POST" class="admin-form" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="title">Certificate Title *</label>
+            <input type="text" id="title" name="title" value="{{ certificate.title if certificate else '' }}" required>
+        </div>
+        
+
+        
+        <div class="form-group">
+            <label for="year">Year *</label>
+            <input type="text" id="year" name="year" value="{{ certificate.year if certificate else '' }}" placeholder="e.g., 2023" required>
+        </div>
+
+        <div class="form-group">
+            <label for="category">Category *</label>
+            <select id="category" name="category" required>
+                <option value="Web Development" {{ 'selected' if certificate and certificate.category == 'Web Development' else '' }}>Web Development</option>
+                <option value="Data Science" {{ 'selected' if certificate and certificate.category == 'Data Science' else '' }}>Data Science</option>
+                <option value="Programming" {{ 'selected' if certificate and certificate.category == 'Programming' else '' }}>Programming</option>
+                <option value="Cloud Computing" {{ 'selected' if certificate and certificate.category == 'Cloud Computing' else '' }}>Cloud Computing</option>
+                <option value="Other" {{ 'selected' if certificate and certificate.category == 'Other' else '' }}>Other</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="short_description">Short 1-line Description *</label>
+            <input type="text" id="short_description" name="short_description" value="{{ certificate.short_description if certificate else '' }}" maxlength="255" required>
+        </div>
+
+        <div class="form-group">
+            <label for="full_description">Detailed Description *</label>
+            <textarea id="full_description" name="full_description" rows="5" required>{{ certificate.full_description if certificate else '' }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="skills">Skills Gained (comma separated)</label>
+            <input type="text" id="skills" name="skills" value="{{ certificate.skills if certificate else '' }}" placeholder="e.g., Python, Flask, React">
+        </div>
+
+
+
+        <div class="form-group">
+            <label for="certificate_file">Upload Certificate (Image or PDF) *</label>
+            <input type="file" id="certificate_file" name="certificate_file" accept=".pdf,.png,.jpg,.jpeg,.gif" {{ 'required' if not certificate else '' }}>
+            {% if certificate and certificate.image_url %}
+            <p>Current file: <a href="{{ certificate.image_url }}" target="_blank">{{ certificate.image_url.split('/')[-1] }}</a></p>
+            {% endif %}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">{{ 'Update' if certificate else 'Create' }} Certificate</button>
+    </form>
+</div>
+{% endblock %}

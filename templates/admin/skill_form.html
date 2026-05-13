@@ -1,0 +1,87 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}{{ 'Edit' if skill else 'Add' }} Skill - Admin{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>{{ 'Edit' if skill else 'Add New' }} Skill</h1>
+    <a href="{{ url_for('admin.skills') }}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back to List</a>
+</div>
+
+<div class="admin-card">
+    <form method="POST" class="admin-form" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="name">Skill Name</label>
+            <input type="text" id="name" name="name" value="{{ skill.name if skill else '' }}" placeholder="e.g. Python" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="skill_logo">Upload Custom Logo (Image/PDF)</label>
+            <input type="file" id="skill_logo" name="skill_logo" accept="image/*,.pdf">
+            {% if skill and skill.image_url %}
+                <div class="current-logo">
+                    <p>Current Logo:</p>
+                    {% if skill.image_url.endswith('.pdf') %}
+                        <a href="{{ skill.image_url }}" target="_blank">View PDF Logo</a>
+                    {% else %}
+                        <img src="{{ skill.image_url }}" alt="{{ skill.name }}" style="max-height: 50px; margin-top: 5px;">
+                    {% endif %}
+                </div>
+            {% endif %}
+            <p class="help-text">If uploaded, this will override the automatic icons.</p>
+        </div>
+        
+        <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category" name="category" required>
+                <option value="" disabled {{ 'selected' if not skill }}>Select Category</option>
+                <option value="Backend Development" {{ 'selected' if skill and skill.category == 'Backend Development' }}>Backend Development</option>
+                <option value="Frontend Development" {{ 'selected' if skill and skill.category == 'Frontend Development' }}>Frontend Development</option>
+                <option value="Database & Analytics" {{ 'selected' if skill and skill.category == 'Database & Analytics' }}>Database & Analytics</option>
+                <option value="Security & Deployment" {{ 'selected' if skill and skill.category == 'Security & Deployment' }}>Security & Deployment</option>
+                <option value="Tools & Productivity" {{ 'selected' if skill and skill.category == 'Tools & Productivity' }}>Tools & Productivity</option>
+                <option value="Cloud Computing" {{ 'selected' if skill and skill.category == 'Cloud Computing' }}>Cloud Computing</option>
+                <option value="Programming" {{ 'selected' if skill and skill.category == 'Programming' }}>Programming</option>
+            </select>
+            <p class="help-text">Select one of the existing categories or enter a custom one below if needed.</p>
+        </div>
+
+        <div class="form-group">
+            <label for="custom_category">Or Enter Custom Category</label>
+            <input type="text" id="custom_category" placeholder="e.g. AI & Machine Learning">
+        </div>
+
+
+
+        <div class="form-group">
+            <label for="description">Short Description</label>
+            <input type="text" id="description" name="description" value="{{ skill.description if skill else '' }}" placeholder="e.g. High-level programming for backend.">
+            <p class="help-text">Max 255 characters. Briefly explain your expertise with this tech.</p>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{{ 'Update' if skill else 'Add' }} Skill</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Simple script to let custom category override select
+    const select = document.getElementById('category');
+    const custom = document.getElementById('custom_category');
+    
+    custom.addEventListener('input', () => {
+        if (custom.value.trim() !== '') {
+            // Create temporary option if not exists or update it
+            let tempOpt = select.querySelector('option[value="' + custom.value + '"]');
+            if (!tempOpt) {
+                tempOpt = document.createElement('option');
+                tempOpt.value = custom.value;
+                tempOpt.text = custom.value;
+                select.appendChild(tempOpt);
+            }
+            select.value = custom.value;
+        }
+    });
+</script>
+{% endblock %}

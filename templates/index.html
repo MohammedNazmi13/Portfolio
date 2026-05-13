@@ -1,0 +1,426 @@
+{% extends 'base.html' %}
+
+{% block title %}Mohammed Nazmi Portfolio{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section id="hero" class="hero-section">
+    <div class="hero-content">
+        <h1 class="reveal reveal-up">Hi, I'm <span id="hero-name" class="highlight" data-text="{{ site.name if site else 'Mohammed Nazmi A' }}"></span></h1>
+        <h2 id="hero-title" class="reveal reveal-up stagger-1" data-text="{{ site.title if site else 'FullStackDeveloper(Backend&Frontend)|SEO' }}" style="min-height: 1.2em;"></h2>
+        <p id="hero-tagline" class="reveal reveal-up stagger-2" data-text="{{ site.tagline if site else 'Building scalable full-stack applications with optimized SEO, robust backend systems, and data-driven insights using MySQL, NumPy, and Pandas.' }}"></p>
+        <div class="hero-buttons reveal reveal-up stagger-3">
+            <a href="#projects" class="btn btn-primary">View Projects</a>
+            <a href="#contact" class="btn btn-outline">Contact Me</a>
+        </div>
+    </div>
+    <div class="hero-background">
+        <div class="gradient-blob shape-1"></div>
+        <div class="gradient-blob shape-2"></div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="section about-section-premium">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    
+    <div class="section-container">
+        <div class="about-header-group reveal reveal-up">
+            <span class="about-subtitle-modern">{{ site.about_subtitle if site and site.about_subtitle else 'ABOUT ME' }}</span>
+            <h2 class="about-title-premium" data-text="{{ site.about_title if site and site.about_title else 'Building Intelligent Solutions' }}">{{ site.about_title if site and site.about_title else 'Building Intelligent Solutions' }}</h2>
+        </div>
+
+        <div class="about-grid-premium">
+            <!-- Left Side: Profile & Identity -->
+            <div class="about-left-col">
+                <div class="about-profile-card reveal reveal-left">
+                    <div class="profile-avatar-container">
+                        <div class="avatar-rings"></div>
+                        <div class="avatar-circle">
+                            <span class="initials-text">{{ site.about_initials if site and site.about_initials else 'MN' }}</span>
+                        </div>
+                    </div>
+
+                    {% if site and (site.looking_for_1 or site.looking_for_2) %}
+                    <div class="looking-for-container">
+                        {% if site.looking_for_1 %}
+                        <div class="looking-card">
+                            <i class="fas fa-rocket"></i>
+                            <span>{{ site.looking_for_1 }}</span>
+                        </div>
+                        {% endif %}
+                        {% if site.looking_for_2 %}
+                        <div class="looking-card">
+                            <i class="fas fa-terminal"></i>
+                            <span>{{ site.looking_for_2 }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="about-stats-bar reveal reveal-left stagger-1">
+                    {% if site and site.stat1_value and site.stat1_label %}
+                    <div class="stat-item-bar">
+                        <span class="stat-value count-up" data-value="{{ site.stat1_value }}">{{ site.stat1_value }}</span>
+                        <span class="stat-label">{{ site.stat1_label }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="stat-divider"></div>
+                    {% if site and site.stat2_value and site.stat2_label %}
+                    <div class="stat-item-bar">
+                        <span class="stat-value count-up" data-value="{{ site.stat2_value }}">{{ site.stat2_value }}</span>
+                        <span class="stat-label">{{ site.stat2_label }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="stat-divider"></div>
+                    {% if site and site.stat3_value and site.stat3_label %}
+                    <div class="stat-item-bar">
+                        <span class="stat-value count-up" data-value="{{ site.stat3_value }}">{{ site.stat3_value }}</span>
+                        <span class="stat-label">{{ site.stat3_label }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Right Side: Philosophy & Focus -->
+            <div class="about-info-blocks">
+                {% if site and site.section1_title and site.section1_desc %}
+                <div class="info-block-premium reveal reveal-right stagger-1">
+                    <div class="block-header">
+                        <div class="block-icon-wrapper icon-vision">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <h3>{{ site.section1_title }}</h3>
+                    </div>
+                    <div class="block-content">
+                        <p>{{ site.section1_desc }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if site and site.section2_title and site.section2_desc %}
+                <div class="info-block-premium reveal reveal-right stagger-2">
+                    <div class="block-header">
+                        <div class="block-icon-wrapper icon-approach">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <h3>{{ site.section2_title }}</h3>
+                    </div>
+                    <div class="block-content">
+                        <p>{{ site.section2_desc }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if site and site.section3_title and site.section3_desc %}
+                <div class="info-block-premium reveal reveal-right stagger-3">
+                    <div class="block-header">
+                        <div class="block-icon-wrapper icon-focus">
+                            <i class="fas fa-crosshairs"></i>
+                        </div>
+                        <h3>{{ site.section3_title }}</h3>
+                    </div>
+                    <div class="block-content">
+                        <p>{{ site.section3_desc }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Education Section -->
+<section id="education" class="section">
+    <div class="section-container">
+        <h2 class="section-title reveal reveal-up">Education</h2>
+        <div class="education-content reveal">
+            {% if educations %}
+                {% for edu in educations %}
+                <div class="education-item reveal {{ 'reveal-left' if loop.index % 2 != 0 else 'reveal-right' }} stagger-{{ (loop.index % 5) + 1 }}">
+                    <div class="education-header">
+                        <div class="education-title">
+                            <h3>{{ edu.degree }}</h3>
+                            <h4>{{ edu.institution }}</h4>
+                        </div>
+                        <span class="education-date">{{ edu.date_range }}</span>
+                    </div>
+                    <p>{{ edu.description }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="education-item">
+                    <p style="text-align: center;">No education history added yet.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+<!-- Skills Section -->
+<section id="skills" class="section bg-darker premium-tech-section">
+    <div class="section-container">
+        <h2 class="section-title reveal reveal-up">Expertise & Tech Stack</h2>
+        
+        <div class="tech-stack-premium reveal">
+            {% if skills_by_category %}
+                {% for category, skills in skills_by_category.items() %}
+                <div class="tech-category-group reveal reveal-up stagger-{{ loop.index }}">
+                    <h3 class="category-title-modern">{{ category }}</h3>
+                    <div class="tech-grid-modern">
+                        {% for skill in skills %}
+                            <div class="skill-card-futuristic" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.2">
+                                <div class="card-glow"></div>
+                                <div class="card-content">
+                                    <div class="skill-icon-wrapper">
+                                        {% if skill.image_url %}
+                                            <img src="{{ skill.image_url }}" alt="{{ skill.name }}" class="skill-custom-logo">
+                                        {% elif skill.devicon_name %}
+                                            <i class="devicon-{{ skill.devicon_name }} colored skill-icon"></i>
+                                        {% else %}
+                                            <i class="{{ skill.icon_class if skill.icon_class else 'fas fa-code' }} skill-icon"></i>
+                                        {% endif %}
+                                    </div>
+                                    <h4 class="skill-name">{{ skill.name }}</h4>
+                                    <p class="skill-mini-desc">{{ skill.description if skill.description else 'Professional expertise in ' ~ skill.name ~ '.' }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p style="text-align: center; width: 100%;">No skills added yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Projects Section (Dynamic) -->
+<section id="projects" class="section">
+    <div class="section-container">
+        <h2 class="section-title reveal reveal-up">Projects</h2>
+        
+        <div id="loading-spinner" class="spinner-container">
+            <div class="spinner"></div>
+            <p>Loading projects...</p>
+        </div>
+
+        <div id="projects-container" class="projects-grid">
+            <!-- Projects will be injected here by JS -->
+        </div>
+    </div>
+</section>
+
+<!-- Experience Section -->
+<section id="experience" class="section bg-darker">
+    <div class="section-container">
+        <h2 class="section-title reveal reveal-up">Professional Experience</h2>
+        <div class="experience-milestone-outer-container reveal">
+            <div class="experience-milestone-wrapper">
+                <div class="milestone-line"></div>
+                <!-- First Set of Items -->
+                {% if experiences %}
+                    {% for exp in experiences|reverse %}
+                    <div class="experience-milestone">
+                        <div class="milestone-year-bg">{{ exp.date_range.split('-')[0]|trim if '-' in exp.date_range else exp.date_range.split(' ')[0]|trim }}</div>
+                        <div class="milestone-dot-outer">
+                            <div class="milestone-dot-inner"></div>
+                        </div>
+                        <div class="experience-card-premium">
+                            <div class="card-glow-overlay"></div>
+                            <div class="card-inner-content">
+                                <span class="exp-date-label">{{ exp.date_range }}</span>
+                                <h3 class="exp-title-premium">{{ exp.job_title }}</h3>
+                                <h4 class="exp-company-premium">{{ exp.company }}</h4>
+                                <p class="exp-desc-premium">{{ exp.description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <!-- Large Gap between Loop Ends -->
+                    <div class="milestone-spacer"></div>
+
+                    <!-- Duplicate Set for Seamless Loop -->
+                    {% for exp in experiences|reverse %}
+                    <div class="experience-milestone">
+                        <div class="milestone-year-bg">{{ exp.date_range.split('-')[0]|trim if '-' in exp.date_range else exp.date_range.split(' ')[0]|trim }}</div>
+                        <div class="milestone-dot-outer">
+                            <div class="milestone-dot-inner"></div>
+                        </div>
+                        <div class="experience-card-premium">
+                            <div class="card-glow-overlay"></div>
+                            <div class="card-inner-content">
+                                <span class="exp-date-label">{{ exp.date_range }}</span>
+                                <h3 class="exp-title-premium">{{ exp.job_title }}</h3>
+                                <h4 class="exp-company-premium">{{ exp.company }}</h4>
+                                <p class="exp-desc-premium">{{ exp.description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <!-- Second Spacer for Seamless Loop -->
+                    <div class="milestone-spacer"></div>
+                {% else %}
+                    <p style="text-align: center; width: 100%;">No experience history added yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Certificates Section -->
+<section id="certificates" class="section">
+    <div class="section-container">
+        <h2 class="section-title reveal reveal-up">Certifications</h2>
+        
+        <!-- Category Filters -->
+        <div class="filter-buttons reveal">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="Web Development">Web Development</button>
+            <button class="filter-btn" data-filter="Data Science">Data Science</button>
+            <button class="filter-btn" data-filter="Programming">Programming</button>
+            <button class="filter-btn" data-filter="Cloud Computing">Cloud Computing</button>
+        </div>
+
+        <div class="certificates-grid reveal">
+            {% if certificates %}
+                {% for cert in certificates %}
+                <div class="certificate-card reveal reveal-zoom stagger-{{ (loop.index % 5) + 1 }}" data-category="{{ cert.category }}">
+                    <div class="cert-image">
+                        {% if cert.image_url.lower().endswith('.pdf') %}
+                        <img src="{{ cert.image_url }}.png" alt="{{ cert.title }}" onerror="this.outerHTML='<div class=\'pdf-placeholder\'><i class=\'fas fa-file-pdf\'></i><span>PDF Document</span></div>'">
+                        {% else %}
+                        <img src="{{ cert.image_url }}" alt="{{ cert.title }}">
+                        {% endif %}
+                    </div>
+                    <div class="cert-body">
+                        <h3 class="cert-title">{{ cert.title }}</h3>
+                        <p class="cert-year">{{ cert.year }}</p>
+                        <p class="cert-short-desc">{{ cert.short_description }}</p>
+                        <button class="btn btn-primary btn-full view-cert-details" 
+                                data-title="{{ cert.title }}"
+                                data-issuer="{{ cert.issuer if cert.issuer else '' }}"
+                                data-year="{{ cert.year }}"
+                                data-full-desc="{{ cert.full_description }}"
+                                data-skills="{{ cert.skills if cert.skills else '' }}"
+                                data-id="{{ cert.certificate_id if cert.certificate_id else '' }}"
+                                data-link="{{ cert.external_link if cert.external_link else '' }}"
+                                data-image="{{ cert.image_url }}"
+                                data-db-id="{{ cert.id }}">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p style="text-align: center; width: 100%;">No certificates added yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Certificate Modal -->
+<div id="cert-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div class="modal-grid">
+            <div class="modal-image">
+                <img id="modal-cert-image" src="" alt="Certificate">
+            </div>
+            <div class="modal-info">
+                <h2 id="modal-cert-title"></h2>
+                <h4 id="modal-cert-issuer"></h4>
+                <div id="modal-cert-desc" class="modal-desc"></div>
+                <div class="modal-skills-container">
+                    <h5>Skills Gained:</h5>
+                    <div id="modal-cert-skills" class="skills-tags"></div>
+                </div>
+                <div style="text-align: right; margin-top: 25px;">
+                    <a id="modal-cert-full-view" href="" target="_blank" class="btn btn-primary btn-small">
+                        <i class="fas fa-external-link-alt"></i> View Full Certificate
+                    </a>
+                </div>
+                <div id="modal-cert-footer" class="modal-footer-info">
+                    <p id="modal-cert-id-wrap"><strong>ID:</strong> <span id="modal-cert-id"></span></p>
+                    <a id="modal-cert-link" href="" target="_blank" class="btn btn-primary btn-small">Verify Certificate</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Project Modal -->
+<div id="project-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" id="close-project-modal">&times;</span>
+        <div class="modal-grid">
+            <div class="modal-image" id="modal-project-img-wrap">
+                <img id="modal-project-image" src="" alt="Project">
+            </div>
+            <div class="modal-info">
+                <h2 id="modal-project-title"></h2>
+                <div class="modal-skills-container">
+                    <h5>Tech Stack:</h5>
+                    <div id="modal-project-tech" class="skills-tags"></div>
+                </div>
+                <div id="modal-project-desc" class="modal-desc" style="margin-top: 15px;"></div>
+                <div class="modal-footer-info">
+                    <div id="modal-project-links" class="project-links-modal"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Section -->
+<section id="contact" class="section bg-darker">
+    <div class="section-container">
+        <h2 class="section-title reveal reveal-up">Get In Touch</h2>
+        <div class="contact-content reveal reveal-zoom">
+            <div class="contact-info">
+                <div class="info-item copy-click" data-copy="{{ site.email if site else 'hello@example.com' }}">
+                    <i class="fas fa-envelope"></i>
+                    <p>{{ site.email if site else 'hello@example.com' }}</p>
+                    <span class="copy-tooltip">Click to copy</span>
+                </div>
+                <div class="info-item copy-click" data-copy="{{ site.phone if site else '+1 (555) 123-4567' }}">
+                    <i class="fas fa-phone"></i>
+                    <p>{{ site.phone if site else '+1 (555) 123-4567' }}</p>
+                    <span class="copy-tooltip">Click to copy</span>
+                </div>
+                <div class="info-item copy-click" data-copy="{{ site.address if site else '123 Tech Street, City, Country' }}">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <p>{{ site.address if site else '123 Tech Street, City, Country' }}</p>
+                    <span class="copy-tooltip">Click to copy</span>
+                </div>
+            </div>
+            
+            <form id="contact-form" class="contact-form">
+                <div class="form-group">
+                    <input type="text" id="name" placeholder="Your Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="email" placeholder="Your Email" required>
+                </div>
+                <div class="form-group">
+                    <textarea id="message" rows="5" placeholder="Your Message" required></textarea>
+                </div>
+                
+                <div class="contact-actions">
+                    <button type="submit" class="btn btn-primary" id="submit-btn">Send Message <i class="fas fa-paper-plane"></i></button>
+                    {% if site.resume_url %}
+                    <a href="{{ url_for('public.view_resume') }}" target="_blank" class="btn btn-outline">
+                        <i class="fas fa-file-download"></i> View/Download Resume
+                    </a>
+                    {% endif %}
+                </div>
+                <div id="form-status" class="form-status"></div>
+            </form>
+        </div>
+    </div>
+</section>  
+{% endblock %}

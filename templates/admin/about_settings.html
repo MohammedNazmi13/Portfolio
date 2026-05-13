@@ -1,0 +1,100 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<div class="form-wrapper">
+    <div class="dashboard-header">
+        <h2>Manage About Section</h2>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+
+    <form method="POST" class="admin-form">
+        <div class="form-section">
+            <h3>Intro & Personal Branding</h3>
+            <div class="form-group">
+                <label for="about_subtitle">Small Subtitle (e.g. ABOUT ME)</label>
+                <input type="text" name="about_subtitle" id="about_subtitle" value="{{ site.about_subtitle }}" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="about_title">Main Heading (e.g. Building Intelligent Solutions)</label>
+                <input type="text" name="about_title" id="about_title" value="{{ site.about_title }}" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="about_initials">Animated Initials (e.g. MN)</label>
+                <input type="text" name="about_initials" id="about_initials" value="{{ site.about_initials }}" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="looking_for_1">Currently Looking For 1</label>
+                <input type="text" name="looking_for_1" id="looking_for_1" value="{{ site.looking_for_1 }}" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="looking_for_2">Currently Looking For 2</label>
+                <input type="text" name="looking_for_2" id="looking_for_2" value="{{ site.looking_for_2 }}" class="form-control">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Stats Configuration</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="stat1_value">Stat 1 Value</label>
+                    <input type="text" name="stat1_value" id="stat1_value" value="{{ site.stat1_value }}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="stat1_label">Stat 1 Label</label>
+                    <input type="text" name="stat1_label" id="stat1_label" value="{{ site.stat1_label }}" class="form-control">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="stat2_value">Stat 2 Value</label>
+                    <input type="text" name="stat2_value" id="stat2_value" value="{{ site.stat2_value }}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="stat2_label">Stat 2 Label</label>
+                    <input type="text" name="stat2_label" id="stat2_label" value="{{ site.stat2_label }}" class="form-control">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="stat3_value">Stat 3 Value</label>
+                    <input type="text" name="stat3_value" id="stat3_value" value="{{ site.stat3_value }}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="stat3_label">Stat 3 Label</label>
+                    <input type="text" name="stat3_label" id="stat3_label" value="{{ site.stat3_label }}" class="form-control">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Right Side Detailed Sections</h3>
+            <div class="form-group">
+                <label for="section1_title">Section 1 Title (e.g. Vision)</label>
+                <input type="text" name="section1_title" id="section1_title" value="{{ site.section1_title }}" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="section1_desc">Section 1 Description</label>
+                <textarea name="section1_desc" id="section1_desc" class="form-control" rows="3">{{ site.section1_desc }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="section2_title">Section 2 Title (e.g. Approach)</label>
+                <input type="text" name="section2_title" id="section2_title" value="{{ site.section2_title }}" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="section2_desc">Section 2 Description</label>
+                <textarea name="section2_desc" id="section2_desc" class="form-control" rows="3">{{ site.section2_desc }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="section3_title">Section 3 Title (e.g. Current Focus)</label>
+                <input type="text" name="section3_title" id="section3_title" value="{{ site.section3_title }}" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="section3_desc">Section 3 Description</label>
+                <textarea name="section3_desc" id="section3_desc" class="form-control" rows="3">{{ site.section3_desc }}</textarea>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update About Section</button>
+    </form>
+</div>
+{% endblock %}
