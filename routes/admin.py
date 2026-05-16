@@ -410,7 +410,37 @@ def delete_message(id):
     db.session.commit()
     flash('Message deleted successfully!', 'success')
     return redirect(url_for('admin.messages'))
-# --- Account Settings (Change Username/Password) ---
+@admin_bp.route('/migrate-db')
+@login_required
+def migrate_db():
+    from sqlalchemy import text
+    try:
+        # Tables and columns to update to TEXT
+        tables_and_columns = [
+            ('projects', 'image_url'),
+            ('certificates', 'image_url'),
+            ('skills', 'image_url'),
+            ('site_content', 'resume_url')
+        ]
+        
+        results = []
+        for table, column in tables_and_columns:
+            try:
+                # Use ALTER COLUMN for PostgreSQL/MySQL
+                db.session.execute(text(f"ALTER TABLE {table} ALTER COLUMN {column} TYPE TEXT"))
+                db.session.commit()
+                results.append(f"Successfully updated {table}.{column}")
+            except Exception as e:
+                db.session.rollback()
+                # If it fails, it might be because it's already TEXT or using SQLite
+                results.append(f"Skipped {table}.{column}: {str(e)}")
+        
+        flash(f"Migration completed: {', '.join(results)}", 'info')
+        return redirect(url_for('admin.dashboard'))
+    except Exception as e:
+        flash(f"Global migration error: {str(e)}", 'error')
+        return redirect(url_for('admin.dashboard'))
+
 @admin_bp.route('/account', methods=['GET', 'POST'])
 @login_required
 def account_settings():

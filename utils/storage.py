@@ -51,15 +51,21 @@ def upload_file(file, folder):
             try:
                 os.makedirs(upload_path)
             except OSError as e:
-                # If we are on Vercel, this will fail. Use /tmp as a last resort or just error out.
+                # If we are on Vercel, local storage fails.
+                # Fallback to Base64 encoding for the database.
                 if 'Read-only file system' in str(e):
-                    print("Read-only file system detected. Cannot save file locally.")
-                    return None
+                    import base64
+                    # Reset file pointer to beginning
+                    file.seek(0)
+                    file_data = file.read()
+                    base64_data = base64.b64encode(file_data).decode('utf-8')
+                    mime_type = file.content_type or 'application/octet-stream'
+                    return f"data:{mime_type};base64,{base64_data}"
                 raise e
                 
         file_path = os.path.join(upload_path, unique_filename)
         file.save(file_path)
         return f"/static/uploads/{folder}/{unique_filename}"
     except Exception as e:
-        print(f"Local upload error: {e}")
+        print(f"Upload error: {e}")
         return None
