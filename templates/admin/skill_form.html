@@ -19,18 +19,25 @@
         
         <div class="form-group">
             <label for="skill_logo">Upload Custom Logo (Image/PDF)</label>
-            <input type="file" id="skill_logo" name="skill_logo" accept="image/*,.pdf">
+            <div class="file-upload-wrapper" style="display: flex; align-items: center; gap: 10px;">
+                <input type="file" id="skill_logo" name="skill_logo" accept="image/*,.pdf">
+                {% if skill and skill.image_url %}
+                <span class="badge" style="background: #10b981; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem;">
+                    <i class="fas fa-check"></i> Logo Saved
+                </span>
+                {% endif %}
+            </div>
             {% if skill and skill.image_url %}
-                <div class="current-logo">
-                    <p>Current Logo:</p>
-                    {% if skill.image_url.endswith('.pdf') %}
-                        <a href="{{ skill.image_url }}" target="_blank">View PDF Logo</a>
+                <div class="current-logo" style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 4px;">
+                    <p style="font-size: 0.8rem; margin-bottom: 5px;">Current View:</p>
+                    {% if '.pdf' in skill.image_url.lower() %}
+                        <a href="{{ skill.image_url }}" target="_blank" style="color: #00ffaa;"><i class="fas fa-file-pdf"></i> View PDF Logo</a>
                     {% else %}
-                        <img src="{{ skill.image_url }}" alt="{{ skill.name }}" style="max-height: 50px; margin-top: 5px;">
+                        <img src="{{ skill.image_url }}" alt="{{ skill.name }}" style="max-height: 50px; border-radius: 4px;">
                     {% endif %}
                 </div>
             {% endif %}
-            <p class="help-text">If uploaded, this will override the automatic icons.</p>
+            <p class="help-text" style="font-size: 0.75rem; opacity: 0.7;">Note: "No file chosen" is normal if you've already uploaded a logo.</p>
         </div>
         
         <div class="form-group">

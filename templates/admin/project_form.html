@@ -15,16 +15,23 @@
 
         <div class="form-group">
             <label for="project_image">Project Image / PDF / File (optional)</label>
+            <div class="file-upload-wrapper" style="display: flex; align-items: center; gap: 10px;">
+                <input type="file" id="project_image" name="project_image" accept="image/*,.pdf">
+                {% if project and project.image_url %}
+                <span class="badge" style="background: #10b981; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem;">
+                    <i class="fas fa-check"></i> Image Saved
+                </span>
+                {% endif %}
+            </div>
             {% if project and project.image_url %}
-            <div class="current-file" style="margin-bottom: 10px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 4px;">
-                <p style="margin: 0;">Current: <a href="{{ project.image_url }}" target="_blank">{{ project.image_url.split('/')[-1] }}</a></p>
-                {% if not project.image_url.endswith('.pdf') %}
+            <div class="current-file" style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 4px;">
+                <p style="margin: 0; font-size: 0.8rem;">Current: <a href="{{ project.image_url }}" target="_blank" style="color: #00ffaa;">View Full File</a></p>
+                {% if '.pdf' not in project.image_url.lower() %}
                 <img src="{{ project.image_url }}" alt="Preview" style="max-height: 100px; margin-top: 10px; border-radius: 4px;">
                 {% endif %}
             </div>
             {% endif %}
-            <input type="file" id="project_image" name="project_image" accept="image/*,.pdf">
-            <p class="form-hint">Upload project preview (Photo, Image, PDF, etc.)</p>
+            <p class="help-text" style="font-size: 0.75rem; opacity: 0.7;">Note: "No file chosen" is normal if an image is already saved above.</p>
         </div>
         
         <div class="form-group">

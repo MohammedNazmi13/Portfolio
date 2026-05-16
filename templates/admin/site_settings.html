@@ -62,10 +62,20 @@
             <h3 class="section-title">Resources & Skills</h3>
             <div class="form-group">
                 <label for="resume_file">Upload Resume (PDF)</label>
-                <input type="file" id="resume_file" name="resume_file" accept=".pdf">
+                <div class="file-upload-wrapper" style="display: flex; align-items: center; gap: 10px;">
+                    <input type="file" id="resume_file" name="resume_file" accept=".pdf">
+                    {% if site and site.resume_url %}
+                    <span class="badge" style="background: #10b981; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem;">
+                        <i class="fas fa-check"></i> Current File Saved
+                    </span>
+                    {% endif %}
+                </div>
                 {% if site and site.resume_url %}
-                <p class="help-text">Current Resume: <a href="{{ site.resume_url }}" target="_blank">View/Download</a></p>
+                <p class="help-text">
+                    <i class="fas fa-file-pdf"></i> <a href="{{ site.resume_url }}" target="_blank" style="color: #00ffaa; text-decoration: underline;">View Current Resume</a>
+                </p>
                 {% endif %}
+                <p class="help-text" style="font-size: 0.75rem; opacity: 0.7;">Note: "No file chosen" is normal. Only select a new file if you want to replace the current one.</p>
             </div>
 
             <div class="form-group">

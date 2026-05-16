@@ -47,25 +47,27 @@ def upload_file(file, folder):
         # Determine upload path
         upload_path = os.path.join(current_app.root_path, 'static', 'uploads', folder)
         
-        if not os.path.exists(upload_path):
-            try:
+        # Try to save locally, but catch ANY errors to fallback to Base64
+        try:
+            if not os.path.exists(upload_path):
                 os.makedirs(upload_path)
-            except OSError as e:
-                # If we are on Vercel, local storage fails.
-                # Fallback to Base64 encoding for the database.
-                if 'Read-only file system' in str(e):
-                    import base64
-                    # Reset file pointer to beginning
-                    file.seek(0)
-                    file_data = file.read()
-                    base64_data = base64.b64encode(file_data).decode('utf-8')
-                    mime_type = file.content_type or 'application/octet-stream'
-                    return f"data:{mime_type};base64,{base64_data}"
-                raise e
-                
-        file_path = os.path.join(upload_path, unique_filename)
-        file.save(file_path)
-        return f"/static/uploads/{folder}/{unique_filename}"
+            
+            file_path = os.path.join(upload_path, unique_filename)
+            file.save(file_path)
+            return f"/static/uploads/{folder}/{unique_filename}"
+        except (OSError, Exception) as e:
+            # If we are on Vercel or any read-only filesystem, fallback to Base64
+            import base64
+            # Reset file pointer to beginning
+            file.seek(0)
+            file_data = file.read()
+            # If file is empty, return None
+            if not file_data:
+                return None
+            base64_data = base64.b64encode(file_data).decode('utf-8')
+            mime_type = file.content_type or 'application/octet-stream'
+            return f"data:{mime_type};base64,{base64_data}"
+            
     except Exception as e:
-        print(f"Upload error: {e}")
+        print(f"Final upload fallback error: {e}")
         return None
