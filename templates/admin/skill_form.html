@@ -5,7 +5,9 @@
 {% block content %}
 <div class="admin-header">
     <h1>{{ 'Edit' if skill else 'Add New' }} Skill</h1>
-    <a href="{{ url_for('admin.skills') }}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back to List</a>
+    <div class="header-back">
+        <a href="{{ url_for('admin.skills') }}" class="back-link"><i class="fas fa-arrow-left"></i> Back to List</a>
+    </div>
 </div>
 
 <div class="admin-card">

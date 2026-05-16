@@ -291,10 +291,16 @@
                 {% for cert in certificates %}
                 <div class="certificate-card reveal reveal-zoom stagger-{{ (loop.index % 5) + 1 }}" data-category="{{ cert.category }}">
                     <div class="cert-image">
-                        {% if cert.image_url.lower().endswith('.pdf') %}
-                        <img src="{{ cert.image_url }}.png" alt="{{ cert.title }}" onerror="this.outerHTML='<div class=\'pdf-placeholder\'><i class=\'fas fa-file-pdf\'></i><span>PDF Document</span></div>'">
+                        {% if '.pdf' in cert.image_url.lower() %}
+                            {% if 'cloudinary.com' in cert.image_url %}
+                                {# Cloudinary PDF to Image transformation #}
+                                <img src="{{ cert.image_url.replace('.pdf', '.jpg') }}" alt="{{ cert.title }}" onerror="this.src='{{ cert.image_url }}';">
+                            {% else %}
+                                {# Local PDF thumbnail fallback #}
+                                <img src="{{ cert.image_url }}.png" alt="{{ cert.title }}" onerror="this.outerHTML='<div class=\'pdf-placeholder\'><i class=\'fas fa-file-pdf\'></i><span>PDF Document</span></div>'">
+                            {% endif %}
                         {% else %}
-                        <img src="{{ cert.image_url }}" alt="{{ cert.title }}">
+                            <img src="{{ cert.image_url }}" alt="{{ cert.title }}">
                         {% endif %}
                     </div>
                     <div class="cert-body">

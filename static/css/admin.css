@@ -178,12 +178,39 @@ h2 {
     width: 100%;
 }
 
-/* Dashboard specific */
-.dashboard-header {
+.admin-header, .dashboard-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+}
+
+.admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.admin-header h1 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.header-back {
+    margin-bottom: 1rem;
+}
+
+.back-link {
+    color: #6f42c1;
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.back-link:hover {
+    text-decoration: underline;
 }
 
 .admin-table {
@@ -213,14 +240,73 @@ h2 {
 
 .actions {
     display: flex;
-    gap: 0.5rem;
+    align-items: center;
+    gap: 1rem;
+}
+
+.edit-link {
+    color: #6f42c1;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.edit-link:hover {
+    text-decoration: underline;
+}
+
+.btn-delete {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: background-color 0.3s;
+}
+
+.btn-delete:hover {
+    background-color: #c0392b;
 }
 
 .inline-form {
     display: inline;
 }
 
-/* Form Wrapper */
+/* Admin Card */
+.admin-card {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
+.card-header {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.card-header h2 {
+    margin-bottom: 0;
+    font-size: 1.25rem;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    color: #444;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.form-actions {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-start;
+}
+
+/* Form Wrapper (keeping for compatibility if used elsewhere) */
 .form-wrapper {
     background: var(--white);
     padding: 2rem;

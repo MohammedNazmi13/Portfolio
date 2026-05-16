@@ -7,6 +7,7 @@ from models.models import User, Project, SiteContent, Contact, Education, Experi
 from functools import wraps
 import fitz # PyMuPDF for PDF thumbnails
 import time
+from utils.storage import upload_file
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -62,20 +63,9 @@ def dashboard():
         # Handle Resume Upload
         if 'resume_file' in request.files:
             file = request.files['resume_file']
-            if file and file.filename != '':
-                filename = secure_filename(file.filename)
-                filename = f"resume_{int(time.time())}_{filename}"
-                upload_path = current_app.config['UPLOAD_FOLDER']
-                if not os.path.exists(upload_path):
-                    os.makedirs(upload_path)
-                file.save(os.path.join(upload_path, filename))
-                
-                if site.resume_url and site.resume_url.startswith('/static/'):
-                    old_path = os.path.join(current_app.root_path, site.resume_url.lstrip('/'))
-                    if os.path.exists(old_path):
-                        try: os.remove(old_path)
-                        except: pass
-                site.resume_url = f"/static/uploads/certificates/{filename}"
+            resume_url = upload_file(file, 'certificates')
+            if resume_url:
+                site.resume_url = resume_url
         
         db.session.commit()
         flash('Dashboard settings updated successfully!', 'success')
@@ -107,23 +97,7 @@ def new_project():
         image_url = ''
         if 'project_image' in request.files:
             file = request.files['project_image']
-            if file and file.filename != '':
-                filename = secure_filename(file.filename)
-                filename = f"project_{int(time.time())}_{filename}"
-                upload_path = os.path.join(current_app.root_path, 'static', 'uploads', 'projects')
-                if not os.path.exists(upload_path):
-                    os.makedirs(upload_path)
-                file_full_path = os.path.join(upload_path, filename)
-                file.save(file_full_path)
-                image_url = f"/static/uploads/projects/{filename}"
-                if filename.lower().endswith('.pdf'):
-                    try:
-                        doc = fitz.open(file_full_path)
-                        page = doc.load_page(0)
-                        pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
-                        pix.save(os.path.join(upload_path, f"{filename}.png"))
-                        doc.close()
-                    except Exception as e: print(f"Thumbnail error: {e}")
+            image_url = upload_file(file, 'projects') or ''
         
         if not title or not description or not tech_stack:
             flash('Required fields are missing.', 'error')
@@ -155,30 +129,9 @@ def edit_project(id):
         project.demo_link = request.form.get('demo_link')
         if 'project_image' in request.files:
             file = request.files['project_image']
-            if file and file.filename != '':
-                filename = secure_filename(file.filename)
-                filename = f"project_{int(time.time())}_{filename}"
-                upload_path = os.path.join(current_app.root_path, 'static', 'uploads', 'projects')
-                if not os.path.exists(upload_path): os.makedirs(upload_path)
-                file_full_path = os.path.join(upload_path, filename)
-                file.save(file_full_path)
-                if project.image_url and project.image_url.startswith('/static/'):
-                    old_path = os.path.join(current_app.root_path, project.image_url.lstrip('/'))
-                    if os.path.exists(old_path):
-                        try: os.remove(old_path)
-                        except: pass
-                        if old_path.lower().endswith('.pdf'):
-                            try: os.remove(old_path + ".png")
-                            except: pass
-                project.image_url = f"/static/uploads/projects/{filename}"
-                if filename.lower().endswith('.pdf'):
-                    try:
-                        doc = fitz.open(file_full_path)
-                        page = doc.load_page(0)
-                        pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
-                        pix.save(os.path.join(upload_path, f"{filename}.png"))
-                        doc.close()
-                    except Exception as e: print(f"Thumbnail error: {e}")
+            new_image_url = upload_file(file, 'projects')
+            if new_image_url:
+                project.image_url = new_image_url
         db.session.commit()
         flash('Project updated successfully!', 'success')
         return redirect(url_for('admin.projects'))
@@ -342,22 +295,7 @@ def new_certificate():
         image_url = ''
         if 'certificate_file' in request.files:
             file = request.files['certificate_file']
-            if file and file.filename != '':
-                filename = secure_filename(file.filename)
-                filename = f"cert_{int(time.time())}_{filename}"
-                upload_path = current_app.config['UPLOAD_FOLDER']
-                if not os.path.exists(upload_path): os.makedirs(upload_path)
-                file_full_path = os.path.join(upload_path, filename)
-                file.save(file_full_path)
-                image_url = f"/static/uploads/certificates/{filename}"
-                if filename.lower().endswith('.pdf'):
-                    try:
-                        doc = fitz.open(file_full_path)
-                        page = doc.load_page(0)
-                        pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
-                        pix.save(os.path.join(upload_path, f"{filename}.png"))
-                        doc.close()
-                    except Exception as e: print(f"Thumbnail error: {e}")
+            image_url = upload_file(file, 'certificates') or ''
         if not title or not year or not short_description or not category:
             flash('Required fields are missing.', 'error')
             return render_template('admin/certificate_form.html')
@@ -383,30 +321,9 @@ def edit_certificate(id):
         certificate.category = request.form.get('category')
         if 'certificate_file' in request.files:
             file = request.files['certificate_file']
-            if file and file.filename != '':
-                filename = secure_filename(file.filename)
-                filename = f"cert_{int(time.time())}_{filename}"
-                upload_path = current_app.config['UPLOAD_FOLDER']
-                if not os.path.exists(upload_path): os.makedirs(upload_path)
-                file_full_path = os.path.join(upload_path, filename)
-                file.save(file_full_path)
-                if certificate.image_url and certificate.image_url.startswith('/static/'):
-                    old_path = os.path.join(current_app.root_path, certificate.image_url.lstrip('/'))
-                    if os.path.exists(old_path):
-                        try: os.remove(old_path)
-                        except: pass
-                        if old_path.lower().endswith('.pdf'):
-                            try: os.remove(old_path + ".png")
-                            except: pass
-                certificate.image_url = f"/static/uploads/certificates/{filename}"
-                if filename.lower().endswith('.pdf'):
-                    try:
-                        doc = fitz.open(file_full_path)
-                        page = doc.load_page(0)
-                        pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
-                        pix.save(os.path.join(upload_path, f"{filename}.png"))
-                        doc.close()
-                    except Exception as e: print(f"Thumbnail error: {e}")
+            new_image_url = upload_file(file, 'certificates')
+            if new_image_url:
+                certificate.image_url = new_image_url
         db.session.commit()
         flash('Certificate updated successfully!', 'success')
         return redirect(url_for('admin.certificates'))
@@ -439,13 +356,7 @@ def new_skill():
         image_url = None
         if 'skill_logo' in request.files:
             file = request.files['skill_logo']
-            if file and file.filename != '':
-                filename = secure_filename(file.filename)
-                filename = f"skill_{int(time.time())}_{filename}"
-                upload_path = os.path.join(current_app.root_path, 'static', 'uploads', 'skills')
-                if not os.path.exists(upload_path): os.makedirs(upload_path)
-                file.save(os.path.join(upload_path, filename))
-                image_url = f"/static/uploads/skills/{filename}"
+            image_url = upload_file(file, 'skills')
         if not name or not category:
             flash('Name and Category are required.', 'error')
             return render_template('admin/skill_form.html', skill=None)
@@ -467,18 +378,9 @@ def edit_skill(id):
         skill.description = request.form.get('description')
         if 'skill_logo' in request.files:
             file = request.files['skill_logo']
-            if file and file.filename != '':
-                filename = secure_filename(file.filename)
-                filename = f"skill_{int(time.time())}_{filename}"
-                upload_path = os.path.join(current_app.root_path, 'static', 'uploads', 'skills')
-                if not os.path.exists(upload_path): os.makedirs(upload_path)
-                file.save(os.path.join(upload_path, filename))
-                if skill.image_url and skill.image_url.startswith('/static/'):
-                    old_path = os.path.join(current_app.root_path, skill.image_url.lstrip('/'))
-                    if os.path.exists(old_path):
-                        try: os.remove(old_path)
-                        except: pass
-                skill.image_url = f"/static/uploads/skills/{filename}"
+            new_image_url = upload_file(file, 'skills')
+            if new_image_url:
+                skill.image_url = new_image_url
         db.session.commit()
         flash('Skill updated successfully!', 'success')
         return redirect(url_for('admin.skills'))

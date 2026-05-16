@@ -85,7 +85,7 @@
         </div>
     </div>
     <div class="viewer-container">
-        {% if cert.image_url.lower().endswith('.pdf') %}
+        {% if '.pdf' in cert.image_url.lower() %}
             <iframe src="{{ cert.image_url }}#toolbar=1" type="application/pdf"></iframe>
         {% else %}
             <img src="{{ cert.image_url }}" alt="{{ cert.title }}">

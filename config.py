@@ -20,3 +20,8 @@ class Config:
     # Upload configuration
     UPLOAD_FOLDER = os.path.join('static', 'uploads', 'certificates')
     ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+
+    # Cloudinary configuration for Vercel
+    CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME')
+    CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY')
+    CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET')
