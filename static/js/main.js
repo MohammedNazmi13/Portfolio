@@ -1,17 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Page Loader
     const loader = document.getElementById('loader');
+    const minLoadTime = 3000; // 3 seconds minimum display
+    const startTime = Date.now();
+
     window.addEventListener('load', () => {
-        hideLoader();
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = Math.max(0, minLoadTime - elapsedTime);
+        setTimeout(hideLoader, remainingTime);
     });
 
-    // Fail-safe: Hide loader after 5 seconds anyway
-    setTimeout(hideLoader, 5000);
+    // Fail-safe: Hide loader after 6 seconds anyway
+    setTimeout(hideLoader, 6000);
 
     function hideLoader() {
-        if (loader && loader.style.display !== 'none') {
-            loader.style.opacity = '0';
-            setTimeout(() => loader.style.display = 'none', 800);
+        if (loader && !loader.classList.contains('warp-exit')) {
+            loader.classList.add('warp-exit');
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 800); // Matches the CSS transition time
         }
     }
 
@@ -266,11 +273,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function initTyping() {
-        await typeEffect('hero-name', 1800, 80); // Slower typing for name
+        await typeEffect('hero-name', 3800, 80); // Slower typing for name, waits for loader
         await typeEffect('hero-title', 100, 30);
         await typeEffect('hero-tagline', 100, 20);
     }
     initTyping();
+    typeEffect('loader-typing-text', 0, 40); // Type out the loader text
 
     // 6. Premium Card Interactions (Skills & About)
     const premiumCards = document.querySelectorAll('.skill-card-futuristic, .about-profile-card, .info-block-premium, .looking-card, .education-item, .experience-card-premium');
@@ -429,23 +437,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const projectHtml = `
                     <div class="project-card-cert reveal reveal-zoom ${staggerClass}">
+                        ${topLinksHtml}
                         <div class="project-card-image">
                             ${imageHtml}
                         </div>
                         <div class="project-card-body">
                             <h3 class="project-card-title">${project.title}</h3>
                             <p class="project-card-desc">${project.description}</p>
-                            <div class="project-card-footer">
-                                <button class="btn btn-primary btn-full view-project-details"
-                                        data-title="${project.title}"
-                                        data-tech="${project.tech_stack}"
-                                        data-full-desc="${(project.full_description || project.description).replace(/"/g, '&quot;')}"
-                                        data-github="${project.github_link || ''}"
-                                        data-demo="${project.demo_link || ''}"
-                                        data-image="${project.image_url || ''}">
-                                    View Details
-                                </button>
-                            </div>
+                            <button class="btn btn-primary btn-full view-project-details"
+                                    data-title="${project.title}"
+                                    data-tech="${project.tech_stack}"
+                                    data-full-desc="${(project.full_description || project.description).replace(/"/g, '&quot;')}"
+                                    data-github="${project.github_link || ''}"
+                                    data-demo="${project.demo_link || ''}"
+                                    data-image="${project.image_url || ''}">
+                                View Details
+                            </button>
                         </div>
                     </div>
                 `;
