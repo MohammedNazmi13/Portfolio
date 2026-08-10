@@ -6,8 +6,11 @@ api_bp = Blueprint('api', __name__)
 
 @api_bp.route('/projects', methods=['GET'])
 def get_projects():
-    projects = Project.query.order_by(Project.created_at.desc()).all()
-    return jsonify([p.to_dict() for p in projects]), 200
+    try:
+        projects = Project.query.order_by(Project.created_at.desc()).all()
+        return jsonify([p.to_dict() for p in projects]), 200
+    except Exception as e:
+        return jsonify([]), 200
 
 @api_bp.route('/projects/<int:id>', methods=['GET'])
 def get_project(id):

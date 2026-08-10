@@ -10,6 +10,9 @@ def create_app(config_class=Config):
     db.init_app(app)
 
     with app.app_context():
+        # Ensure database tables exist
+        db.create_all()
+
         # Import routes
         from routes.public import public_bp
         from routes.admin import admin_bp
