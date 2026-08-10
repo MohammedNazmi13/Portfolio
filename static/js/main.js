@@ -145,7 +145,10 @@ document.addEventListener('DOMContentLoaded', () => {
             requestAnimationFrame(updateCursor);
         }
         
-        if (cursor) cursor.style.opacity = '1';
+        if (cursor) {
+            cursor.style.display = 'block';
+            cursor.style.opacity = '1';
+        }
     });
 
     // Click to Copy Logic
