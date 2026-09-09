@@ -99,23 +99,27 @@ document.addEventListener('DOMContentLoaded', () => {
         animate();
     }
 
-    // 3. Magnetic Hover Effect
+    // 3. Ultra-Fast Magnetic Hover Effect (Throttled for 60fps)
     const magneticElements = document.querySelectorAll('.nav-link-mag, .btn, .skill-card, .info-block-premium, .about-profile-card');
     magneticElements.forEach(el => {
+        let magFrame = null;
         el.addEventListener('mousemove', (e) => {
-            const rect = el.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
-            
-            el.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px) scale(1.05)`;
-        });
+            if (magFrame) cancelAnimationFrame(magFrame);
+            magFrame = requestAnimationFrame(() => {
+                const rect = el.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                el.style.transform = `translate3d(${x * 0.25}px, ${y * 0.25}px, 0) scale(1.04)`;
+            });
+        }, { passive: true });
 
         el.addEventListener('mouseleave', () => {
-            el.style.transform = `translate(0, 0) scale(1)`;
+            if (magFrame) cancelAnimationFrame(magFrame);
+            el.style.transform = 'translate3d(0, 0, 0) scale(1)';
         });
     });
 
-    // 4. Back to Top Logic & Scroll Reset
+    // 4. Back to Top & Scroll Progress (Passive & Non-Blocking)
     if (history.scrollRestoration) {
         history.scrollRestoration = 'manual';
     }
@@ -123,24 +127,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const progressBar = document.querySelector('.scroll-progress');
     const backToTop = document.getElementById('back-to-top');
+    let scrollTicking = false;
+
     window.addEventListener('scroll', () => {
-        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        const scrolled = (winScroll / height) * 100;
-        if (progressBar) progressBar.style.width = scrolled + "%";
-        
-        if (winScroll > 500) {
-            backToTop?.classList.add('visible');
-        } else {
-            backToTop?.classList.remove('visible');
+        if (!scrollTicking) {
+            requestAnimationFrame(() => {
+                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (winScroll / height) * 100;
+                if (progressBar) progressBar.style.width = scrolled + "%";
+                
+                if (winScroll > 400) {
+                    backToTop?.classList.add('visible');
+                } else {
+                    backToTop?.classList.remove('visible');
+                }
+                scrollTicking = false;
+            });
+            scrollTicking = true;
         }
-    });
+    }, { passive: true });
 
     backToTop?.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    // 4b. Optimized Custom Cursor
+    // 4b. Ultra-Responsive Hardware-Accelerated Custom Cursor
     const cursor = document.getElementById('custom-cursor');
     let mouseX = 0, mouseY = 0;
     let cursorX = 0, cursorY = 0;
@@ -152,16 +164,50 @@ document.addEventListener('DOMContentLoaded', () => {
         mouseX = e.clientX;
         mouseY = e.clientY;
         
+        if (cursor && cursor.style.display !== 'block') {
+            cursor.style.display = 'block';
+            cursor.style.opacity = '1';
+        }
+
         if (!isMoving) {
             isMoving = true;
             requestAnimationFrame(updateCursor);
         }
+    }, { passive: true });
+
+    function updateCursor() {
+        cursorX += (mouseX - cursorX) * 0.75;
+        cursorY += (mouseY - cursorY) * 0.75;
         
         if (cursor) {
-            cursor.style.display = 'block';
-            cursor.style.opacity = '1';
+            cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0)`;
         }
+        
+        if (Math.abs(mouseX - cursorX) > 0.05 || Math.abs(mouseY - cursorY) > 0.05) {
+            requestAnimationFrame(updateCursor);
+        } else {
+            isMoving = false;
+        }
+    }
+
+    document.addEventListener('mouseleave', () => {
+        if (cursor) cursor.style.opacity = '0';
     });
+
+    // Smooth hover effect delegation without layout thrashing
+    document.addEventListener('mouseover', (e) => {
+        const target = e.target.closest(hoverTargetSelector);
+        if (target) {
+            document.body.classList.add('cursor-hover');
+        }
+    }, { passive: true });
+
+    document.addEventListener('mouseout', (e) => {
+        const target = e.target.closest(hoverTargetSelector);
+        if (target) {
+            document.body.classList.remove('cursor-hover');
+        }
+    }, { passive: true });
 
     // Click to Copy Logic
     const copyElements = document.querySelectorAll('.copy-click');
@@ -187,55 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Detect hover on scroll even if mouse is stationary
-    window.addEventListener('scroll', () => {
-        const hoveredEl = document.elementFromPoint(mouseX, mouseY);
-        if (hoveredEl) {
-            const target = hoveredEl.closest(hoverTargetSelector);
-            if (target) {
-                document.body.classList.add('cursor-hover');
-            } else {
-                document.body.classList.remove('cursor-hover');
-            }
-        }
-    });
-
-    function updateCursor() {
-        // Increased lerp factor for snappier feel (0.35 instead of 0.2)
-        cursorX += (mouseX - cursorX) * 0.35;
-        cursorY += (mouseY - cursorY) * 0.35;
-        
-        if (cursor) {
-            cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0)`;
-        }
-        
-        if (Math.abs(mouseX - cursorX) > 0.01 || Math.abs(mouseY - cursorY) > 0.01) {
-            requestAnimationFrame(updateCursor);
-        } else {
-            isMoving = false;
-        }
-    }
-
-    document.addEventListener('mouseleave', () => {
-        if (cursor) cursor.style.opacity = '0';
-    });
-
-    // Event Delegation for hover effects
-    document.addEventListener('mouseover', (e) => {
-        const target = e.target.closest(hoverTargetSelector);
-        if (target) {
-            document.body.classList.add('cursor-hover');
-        }
-    });
-
-    document.addEventListener('mouseout', (e) => {
-        const target = e.target.closest(hoverTargetSelector);
-        if (target) {
-            document.body.classList.remove('cursor-hover');
-        }
-    });
-
-    // 5. Intersection Observer for Reveals
+    // 5. Intersection Observer for Smooth Reveal Animations
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -247,19 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const initReveals = () => {
         const reveals = document.querySelectorAll('.reveal');
-        reveals.forEach(el => {
-            revealObserver.observe(el);
-        });
-
-        // Fail-safe: If elements in viewport are not active after 2s, force them
-        setTimeout(() => {
-            reveals.forEach(el => {
-                const rect = el.getBoundingClientRect();
-                if (rect.top < window.innerHeight && rect.bottom > 0) {
-                    el.classList.add('active');
-                }
-            });
-        }, 2000);
+        reveals.forEach(el => revealObserver.observe(el));
     };
     initReveals();
 
@@ -271,10 +257,10 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             navbar.classList.remove('scrolled');
         }
-    });
+    }, { passive: true });
 
-    // 7. Sequential Hero Typing Effect
-    async function typeCharacterByCharacter(elementId, text, charDelay = 40) {
+    // 7. Sequential Hero Typing Effect (Initial State Empty -> 1st -> 2nd -> 3rd)
+    async function typeCharacterByCharacter(elementId, text, charDelay = 35) {
         const el = document.getElementById(elementId);
         if (!el) return;
         el.innerText = '';
@@ -295,19 +281,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const titleText = titleEl ? (titleEl.getAttribute('data-text') || 'Full Stack Developer (Backend & Frontend) | SEO | Python | MySQL | Data Analytics with NumPy & Pandas | Security & Deployment') : '';
             const taglineText = taglineEl ? (taglineEl.getAttribute('data-text') || 'Building scalable full-stack applications with optimized SEO, robust backend systems, and data-driven insights using MySQL, NumPy, and Pandas.') : '';
 
-            // Step 1: Type Name
+            // Ensure elements are empty before typing starts
+            if (nameEl) nameEl.innerText = '';
+            if (titleEl) titleEl.innerText = '';
+            if (taglineEl) taglineEl.innerText = '';
+
+            // 1st: Hi, I'm Mohammed Nazmi A
             if (nameEl) {
-                await typeCharacterByCharacter('hero-name', nameText, 50);
+                await typeCharacterByCharacter('hero-name', nameText, 45);
                 await new Promise(r => setTimeout(r, 200));
             }
 
-            // Step 2: Type Title below it
+            // 2nd: Full Stack Developer (Backend & Frontend)...
             if (titleEl) {
                 await typeCharacterByCharacter('hero-title', titleText, 20);
                 await new Promise(r => setTimeout(r, 200));
             }
 
-            // Step 3: Type Tagline below it
+            // 3rd: Building scalable full-stack applications...
             if (taglineEl) {
                 await typeCharacterByCharacter('hero-tagline', taglineText, 12);
             }
@@ -316,40 +307,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 6. Premium Card Interactions (Skills & About)
+    // 8. Throttled Premium Card Interactions (Zero Lag during scroll)
     const premiumCards = document.querySelectorAll('.skill-card-futuristic, .about-profile-card, .info-block-premium, .looking-card, .education-item, .experience-card-premium');
-    const aboutSection = document.querySelector('.about-section-premium');
     
-    if (aboutSection) {
-        aboutSection.addEventListener('mousemove', (e) => {
-            const rect = aboutSection.getBoundingClientRect();
-            aboutSection.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
-            aboutSection.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
-        });
-    }
-
     premiumCards.forEach(card => {
+        let cardFrame = null;
         card.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            // Set CSS variables for mouse-follow glow
-            card.style.setProperty('--mouse-x', `${x}px`);
-            card.style.setProperty('--mouse-y', `${y}px`);
-            
-            // Apply tilt effect to specific cards
-            if (card.classList.contains('skill-card-futuristic') || card.classList.contains('about-profile-card') || card.classList.contains('info-block-premium') || card.classList.contains('education-item') || card.classList.contains('experience-card-futuristic')) {
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const rotateX = (centerY - y) / 20; 
-                const rotateY = (x - centerX) / 20;
+            if (cardFrame) cancelAnimationFrame(cardFrame);
+            cardFrame = requestAnimationFrame(() => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
                 
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.03)`;
-            }
-        });
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+                
+                if (card.classList.contains('skill-card-futuristic') || card.classList.contains('about-profile-card') || card.classList.contains('info-block-premium') || card.classList.contains('education-item')) {
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = (centerY - y) / 25; 
+                    const rotateY = (x - centerX) / 25;
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+                }
+            });
+        }, { passive: true });
 
         card.addEventListener('mouseleave', () => {
+            if (cardFrame) cancelAnimationFrame(cardFrame);
             card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
         });
     });
