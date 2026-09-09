@@ -40,13 +40,26 @@ html {
 
 /* Loader Styles */
 .loader-wrapper {
-    display: none !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #030712;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.6s cubic-bezier(0.8, 0, 0.2, 1), visibility 0.6s ease, transform 0.6s ease;
 }
 
 .loader-wrapper.warp-exit {
     opacity: 0;
     visibility: hidden;
-    transform: scale(2);
+    transform: scale(1.15);
+    pointer-events: none;
 }
 
 .loader-content {

@@ -1,9 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Page Loader - ensure instant display of content
+    // 1. 3-Second Loading Screen with Animated Typing Dots
     const loader = document.getElementById('loader');
-    if (loader) {
-        loader.style.display = 'none';
-    }
+    const loaderDots = document.getElementById('loader-dots');
+    
+    let dotCount = 3;
+    const dotInterval = setInterval(() => {
+        if (!loaderDots) return;
+        dotCount = (dotCount + 1) % 4;
+        if (dotCount === 0) loaderDots.innerText = '';
+        else if (dotCount === 1) loaderDots.innerText = '.';
+        else if (dotCount === 2) loaderDots.innerText = '..';
+        else if (dotCount === 3) loaderDots.innerText = '...';
+    }, 450);
+
+    let typingStarted = false;
+    const dismissLoader = () => {
+        clearInterval(dotInterval);
+        if (loader && !loader.classList.contains('warp-exit')) {
+            loader.classList.add('warp-exit');
+            setTimeout(() => {
+                loader.style.display = 'none';
+                if (!typingStarted) {
+                    typingStarted = true;
+                    initSequentialHeroTyping();
+                }
+            }, 600);
+        } else if (!typingStarted) {
+            typingStarted = true;
+            initSequentialHeroTyping();
+        }
+    };
+
+    // Show loader for exactly 3 seconds (3000ms)
+    setTimeout(dismissLoader, 3000);
 
     // 2. Background Particle System
     const canvas = document.getElementById('bg-canvas');
@@ -245,12 +274,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 7. Sequential Hero Typing Effect
-    async function typeEffect(id, delay = 0, charDelay = 30) {
-        const el = document.getElementById(id);
+    async function typeCharacterByCharacter(elementId, text, charDelay = 40) {
+        const el = document.getElementById(elementId);
         if (!el) return;
-        const text = el.getAttribute('data-text') || el.innerText;
-        if (!text) return;
-        await new Promise(resolve => setTimeout(resolve, delay));
         el.innerText = '';
         for (let i = 0; i < text.length; i++) {
             el.innerText += text.charAt(i);
@@ -259,14 +285,36 @@ document.addEventListener('DOMContentLoaded', () => {
         el.classList.add('typing-done');
     }
 
-    async function initTyping() {
+    async function initSequentialHeroTyping() {
         try {
-            await typeEffect('hero-name', 100, 30);
-            await typeEffect('hero-title', 50, 20);
-            await typeEffect('hero-tagline', 50, 15);
-        } catch (e) { console.error('Typing effect error:', e); }
+            const nameEl = document.getElementById('hero-name');
+            const titleEl = document.getElementById('hero-title');
+            const taglineEl = document.getElementById('hero-tagline');
+
+            const nameText = nameEl ? (nameEl.getAttribute('data-text') || 'Mohammed Nazmi A') : '';
+            const titleText = titleEl ? (titleEl.getAttribute('data-text') || 'Full Stack Developer (Backend & Frontend) | SEO | Python | MySQL | Data Analytics with NumPy & Pandas | Security & Deployment') : '';
+            const taglineText = taglineEl ? (taglineEl.getAttribute('data-text') || 'Building scalable full-stack applications with optimized SEO, robust backend systems, and data-driven insights using MySQL, NumPy, and Pandas.') : '';
+
+            // Step 1: Type Name
+            if (nameEl) {
+                await typeCharacterByCharacter('hero-name', nameText, 50);
+                await new Promise(r => setTimeout(r, 200));
+            }
+
+            // Step 2: Type Title below it
+            if (titleEl) {
+                await typeCharacterByCharacter('hero-title', titleText, 20);
+                await new Promise(r => setTimeout(r, 200));
+            }
+
+            // Step 3: Type Tagline below it
+            if (taglineEl) {
+                await typeCharacterByCharacter('hero-tagline', taglineText, 12);
+            }
+        } catch (e) {
+            console.error('Sequential hero typing error:', e);
+        }
     }
-    initTyping();
 
     // 6. Premium Card Interactions (Skills & About)
     const premiumCards = document.querySelectorAll('.skill-card-futuristic, .about-profile-card, .info-block-premium, .looking-card, .education-item, .experience-card-premium');
