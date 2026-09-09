@@ -2,12 +2,8 @@
   "version": 2,
   "rewrites": [
     {
-      "source": "/static/:path*",
-      "destination": "/api/index.py?__path__=/static/:path*"
-    },
-    {
-      "source": "/:path*",
-      "destination": "/api/index.py?__path__=/:path*"
+      "source": "/((?!static/).*)",
+      "destination": "/api/index.py?__path__=/$1"
     }
   ]
 }
