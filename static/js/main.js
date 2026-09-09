@@ -308,6 +308,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 8. Throttled Premium Card Interactions (Zero Lag during scroll)
+    const aboutSection = document.querySelector('.about-section-premium');
+    if (aboutSection) {
+        aboutSection.addEventListener('mousemove', (e) => {
+            const rect = aboutSection.getBoundingClientRect();
+            aboutSection.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+            aboutSection.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+        }, { passive: true });
+    }
+
     const premiumCards = document.querySelectorAll('.skill-card-futuristic, .about-profile-card, .info-block-premium, .looking-card, .education-item, .experience-card-premium');
     
     premiumCards.forEach(card => {
@@ -478,7 +487,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 projectsContainer.insertAdjacentHTML('beforeend', projectHtml);
             });
-            setTimeout(initReveals, 100);
+            // Re-observe new cards for reveal animation
+            setTimeout(() => {
+                const newCards = projectsContainer.querySelectorAll('.reveal:not(.active)');
+                newCards.forEach(el => revealObserver.observe(el));
+            }, 100);
         } catch (e) { console.error(e); }
     }
 
