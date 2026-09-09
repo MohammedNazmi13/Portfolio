@@ -1,21 +1,42 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. 3-Second Loading Screen with Animated Typing Dots
+    // 1. 3-Second Loading Screen with Dynamic Admin Name Typing & Animated Dots
     const loader = document.getElementById('loader');
-    const loaderDots = document.getElementById('loader-dots');
+    const loaderTextSpan = document.getElementById('loader-status-text');
+    const loaderDotsSpan = document.getElementById('loader-dots');
     
-    let dotCount = 3;
-    const dotInterval = setInterval(() => {
-        if (!loaderDots) return;
-        dotCount = (dotCount + 1) % 4;
-        if (dotCount === 0) loaderDots.innerText = '';
-        else if (dotCount === 1) loaderDots.innerText = '.';
-        else if (dotCount === 2) loaderDots.innerText = '..';
-        else if (dotCount === 3) loaderDots.innerText = '...';
-    }, 450);
-
+    const adminName = (loaderTextSpan && loaderTextSpan.getAttribute('data-name')) || 'Mohammed Nazmi';
+    const targetLoaderPhrase = `Initializing ${adminName}’s portfolio`;
+    
+    let dotCount = 0;
+    let dotInterval = null;
     let typingStarted = false;
+
+    // Type character-by-character for loader phrase
+    if (loaderTextSpan) {
+        loaderTextSpan.innerText = '';
+        if (loaderDotsSpan) loaderDotsSpan.innerText = '';
+        let i = 0;
+        const loaderTypingTimer = setInterval(() => {
+            if (i < targetLoaderPhrase.length) {
+                loaderTextSpan.innerText += targetLoaderPhrase.charAt(i);
+                i++;
+            } else {
+                clearInterval(loaderTypingTimer);
+                // Cycle 0 -> 1 -> 2 -> 3 -> 0 dots
+                dotInterval = setInterval(() => {
+                    if (!loaderDotsSpan) return;
+                    dotCount = (dotCount + 1) % 4;
+                    if (dotCount === 0) loaderDotsSpan.innerText = '';
+                    else if (dotCount === 1) loaderDotsSpan.innerText = '.';
+                    else if (dotCount === 2) loaderDotsSpan.innerText = '..';
+                    else if (dotCount === 3) loaderDotsSpan.innerText = '...';
+                }, 220);
+            }
+        }, 18);
+    }
+
     const dismissLoader = () => {
-        clearInterval(dotInterval);
+        if (dotInterval) clearInterval(dotInterval);
         if (loader && !loader.classList.contains('warp-exit')) {
             loader.classList.add('warp-exit');
             setTimeout(() => {
@@ -99,27 +120,31 @@ document.addEventListener('DOMContentLoaded', () => {
         animate();
     }
 
-    // 3. Ultra-Fast Magnetic Hover Effect (Throttled for 60fps)
-    const magneticElements = document.querySelectorAll('.nav-link-mag, .btn, .skill-card, .info-block-premium, .about-profile-card');
-    magneticElements.forEach(el => {
-        let magFrame = null;
-        el.addEventListener('mousemove', (e) => {
-            if (magFrame) cancelAnimationFrame(magFrame);
-            magFrame = requestAnimationFrame(() => {
-                const rect = el.getBoundingClientRect();
-                const x = e.clientX - rect.left - rect.width / 2;
-                const y = e.clientY - rect.top - rect.height / 2;
-                el.style.transform = `translate3d(${x * 0.25}px, ${y * 0.25}px, 0) scale(1.04)`;
+    // 3. Ultra-Fast Magnetic Hover Effect Helper
+    function bindMagneticEffect(elements) {
+        elements.forEach(el => {
+            let magFrame = null;
+            el.addEventListener('mousemove', (e) => {
+                if (magFrame) cancelAnimationFrame(magFrame);
+                magFrame = requestAnimationFrame(() => {
+                    const rect = el.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    el.style.transform = `translate3d(${x * 0.25}px, ${y * 0.25}px, 0) scale(1.04)`;
+                });
+            }, { passive: true });
+
+            el.addEventListener('mouseleave', () => {
+                if (magFrame) cancelAnimationFrame(magFrame);
+                el.style.transform = '';
             });
-        }, { passive: true });
-
-        el.addEventListener('mouseleave', () => {
-            if (magFrame) cancelAnimationFrame(magFrame);
-            el.style.transform = 'translate3d(0, 0, 0) scale(1)';
         });
-    });
+    }
 
-    // 4. Back to Top & Scroll Progress (Passive & Non-Blocking)
+    const magneticElements = document.querySelectorAll('.nav-link-mag, .btn, .skill-card, .info-block-premium, .about-profile-card');
+    bindMagneticEffect(magneticElements);
+
+    // 4. Back to Top & Scroll Progress with Scroll Hover Pointer Detection
     if (history.scrollRestoration) {
         history.scrollRestoration = 'manual';
     }
@@ -142,6 +167,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     backToTop?.classList.remove('visible');
                 }
+
+                // Update element mouse coordinates on scroll for stationary pointer hover reaction
+                if (mouseX && mouseY) {
+                    const elemUnderPointer = document.elementFromPoint(mouseX, mouseY);
+                    if (elemUnderPointer) {
+                        const card = elemUnderPointer.closest('.info-block-premium, .skill-card-futuristic, .about-profile-card, .education-item, .experience-card-premium, .certificate-card, .project-card-cert');
+                        if (card) {
+                            const rect = card.getBoundingClientRect();
+                            card.style.setProperty('--mouse-x', `${mouseX - rect.left}px`);
+                            card.style.setProperty('--mouse-y', `${mouseY - rect.top}px`);
+                        }
+                    }
+                }
+
                 scrollTicking = false;
             });
             scrollTicking = true;
@@ -343,7 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         card.addEventListener('mouseleave', () => {
             if (cardFrame) cancelAnimationFrame(cardFrame);
-            card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
+            card.style.transform = '';
         });
     });
 
@@ -487,10 +526,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 projectsContainer.insertAdjacentHTML('beforeend', projectHtml);
             });
-            // Re-observe new cards for reveal animation
+            // Re-observe new cards for reveal animation and bind magnetic effects
             setTimeout(() => {
                 const newCards = projectsContainer.querySelectorAll('.reveal:not(.active)');
                 newCards.forEach(el => revealObserver.observe(el));
+
+                const projectButtons = projectsContainer.querySelectorAll('.view-project-details, .top-link-icon');
+                bindMagneticEffect(projectButtons);
             }, 100);
         } catch (e) { console.error(e); }
     }
