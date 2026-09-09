@@ -1,25 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Page Loader
+    // 1. Page Loader - ensure instant display of content
     const loader = document.getElementById('loader');
-    const minLoadTime = 3000; // 3 seconds minimum display
-    const startTime = Date.now();
-
-    window.addEventListener('load', () => {
-        const elapsedTime = Date.now() - startTime;
-        const remainingTime = Math.max(0, minLoadTime - elapsedTime);
-        setTimeout(hideLoader, remainingTime);
-    });
-
-    // Fail-safe: Hide loader after 6 seconds anyway
-    setTimeout(hideLoader, 6000);
-
-    function hideLoader() {
-        if (loader && !loader.classList.contains('warp-exit')) {
-            loader.classList.add('warp-exit');
-            setTimeout(() => {
-                loader.style.display = 'none';
-            }, 800); // Matches the CSS transition time
-        }
+    if (loader) {
+        loader.style.display = 'none';
     }
 
     // 2. Background Particle System
@@ -265,9 +248,10 @@ document.addEventListener('DOMContentLoaded', () => {
     async function typeEffect(id, delay = 0, charDelay = 30) {
         const el = document.getElementById(id);
         if (!el) return;
-        const text = el.getAttribute('data-text');
-        el.innerText = '';
+        const text = el.getAttribute('data-text') || el.innerText;
+        if (!text) return;
         await new Promise(resolve => setTimeout(resolve, delay));
+        el.innerText = '';
         for (let i = 0; i < text.length; i++) {
             el.innerText += text.charAt(i);
             await new Promise(resolve => setTimeout(resolve, charDelay));
@@ -276,12 +260,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function initTyping() {
-        await typeEffect('hero-name', 3800, 80); // Slower typing for name, waits for loader
-        await typeEffect('hero-title', 100, 30);
-        await typeEffect('hero-tagline', 100, 20);
+        try {
+            await typeEffect('hero-name', 100, 30);
+            await typeEffect('hero-title', 50, 20);
+            await typeEffect('hero-tagline', 50, 15);
+        } catch (e) { console.error('Typing effect error:', e); }
     }
     initTyping();
-    typeEffect('loader-typing-text', 0, 40); // Type out the loader text
 
     // 6. Premium Card Interactions (Skills & About)
     const premiumCards = document.querySelectorAll('.skill-card-futuristic, .about-profile-card, .info-block-premium, .looking-card, .education-item, .experience-card-premium');
