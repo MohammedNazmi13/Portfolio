@@ -32,12 +32,6 @@ def create_app(config_class=Config):
         app.register_blueprint(admin_bp, url_prefix='/admin')
         app.register_blueprint(api_bp, url_prefix='/api')
 
-    # Fallback route for Vercel serverless entry point
-    @app.route('/api/index')
-    @app.route('/api/index/')
-    def vercel_entry():
-        from routes.public import index
-        return index()
 
     # Setup route for first-time initialization
     @app.route('/setup-db')
